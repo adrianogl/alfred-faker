@@ -4,10 +4,31 @@
 <dict>
 	<key>bundleid</key>
 	<string></string>
-	<key>category</key>
-	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
+		<key>7DDB4A04-49E2-4413-81A8-F9890E4847E6</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>A9C5E38B-ECFD-4B0F-BA9F-09015BFFD6CE</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>05E5469B-6640-4DDD-BB99-F6FE827150C8</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>921C322A-BD9B-4330-8B37-591EE40E2A3C</key>
 		<array>
 			<dict>
@@ -56,6 +77,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>F59582E0-ED79-4123-941D-DD9787053B75</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>7DDB4A04-49E2-4413-81A8-F9890E4847E6</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Adriano Gonçalves</string>
@@ -67,27 +101,6 @@
 	<string>Alfred Faker</string>
 	<key>objects</key>
 	<array>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
-				<integer>0</integer>
-				<key>keyword</key>
-				<string>faker</string>
-				<key>subtext</key>
-				<string></string>
-				<key>text</key>
-				<string>Generate fake data</string>
-				<key>withspace</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>B3FB58B8-373A-4DE4-B39B-3974AE0F6F9F</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -112,6 +125,27 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>faker</string>
+				<key>subtext</key>
+				<string>name, phone, email</string>
+				<key>text</key>
+				<string>Generate fake data</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>B3FB58B8-373A-4DE4-B39B-3974AE0F6F9F</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
@@ -119,11 +153,21 @@
 				<key>script</key>
 				<string>require __DIR__.'/vendor/autoload.php';
 
+use Sven\FileConfig\File;
+use Sven\FileConfig\Stores\Json;
+
 $query = "{query}";
 
 
 $faker = Faker\Factory::create('en_EN');
-$faker-&gt;addProvider(new JansenFelipe\FakerBR\FakerBR($faker));
+
+$file = new File('./providers.json');
+$config = new Json($file);
+
+foreach($config-&gt;get('providers') as $provider){
+	$faker-&gt;addProvider(new $provider($faker));
+}
+
 echo $faker-&gt;$query;</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
@@ -159,6 +203,84 @@ echo $faker-&gt;$query;</string>
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>faker addprovider</string>
+				<key>subtext</key>
+				<string>Faker\Provider\Lorem, Faker\Provider\Base</string>
+				<key>text</key>
+				<string>Add new faker provider</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>F59582E0-ED79-4123-941D-DD9787053B75</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>100</integer>
+				<key>script</key>
+				<string>require __DIR__.'/vendor/autoload.php';
+
+use Sven\FileConfig\File;
+use Sven\FileConfig\Stores\Json;
+use Ramsey\Uuid\Uuid;
+
+$query = "{query}";
+
+$file = new File('./providers.json');
+$config = new Json($file);
+
+$uuid = Uuid::uuid4()-&gt;toString();
+
+$config-&gt;set('providers.'.$uuid, $query);</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>1</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>7DDB4A04-49E2-4413-81A8-F9890E4847E6</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<false/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>New provider added</string>
+				<key>title</key>
+				<string>{query}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>A9C5E38B-ECFD-4B0F-BA9F-09015BFFD6CE</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>soundname</key>
 				<string>Bottle</string>
 				<key>systemsound</key>
@@ -171,38 +293,74 @@ echo $faker-&gt;$query;</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>soundname</key>
+				<string>Bottle</string>
+				<key>systemsound</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.playsound</string>
+			<key>uid</key>
+			<string>05E5469B-6640-4DDD-BB99-F6FE827150C8</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string></string>
 	<key>uidata</key>
 	<dict>
+		<key>05E5469B-6640-4DDD-BB99-F6FE827150C8</key>
+		<dict>
+			<key>xpos</key>
+			<integer>400</integer>
+			<key>ypos</key>
+			<integer>330</integer>
+		</dict>
 		<key>5C10E98E-24D9-4273-AE37-891A48F8F0C9</key>
 		<dict>
 			<key>xpos</key>
-			<integer>480</integer>
+			<integer>670</integer>
 			<key>ypos</key>
-			<integer>190</integer>
+			<integer>160</integer>
 		</dict>
 		<key>750B1A0C-843C-498A-981D-3B811D5EC1F1</key>
 		<dict>
 			<key>xpos</key>
-			<integer>480</integer>
+			<integer>670</integer>
 			<key>ypos</key>
-			<integer>330</integer>
+			<integer>280</integer>
+		</dict>
+		<key>7DDB4A04-49E2-4413-81A8-F9890E4847E6</key>
+		<dict>
+			<key>xpos</key>
+			<integer>200</integer>
+			<key>ypos</key>
+			<integer>190</integer>
 		</dict>
 		<key>921C322A-BD9B-4330-8B37-591EE40E2A3C</key>
 		<dict>
 			<key>xpos</key>
-			<integer>250</integer>
+			<integer>290</integer>
 			<key>ypos</key>
 			<integer>50</integer>
 		</dict>
 		<key>99FBA7F5-1E24-4F76-9AA1-A04CE845693E</key>
 		<dict>
 			<key>xpos</key>
-			<integer>480</integer>
+			<integer>670</integer>
 			<key>ypos</key>
-			<integer>50</integer>
+			<integer>40</integer>
+		</dict>
+		<key>A9C5E38B-ECFD-4B0F-BA9F-09015BFFD6CE</key>
+		<dict>
+			<key>xpos</key>
+			<integer>400</integer>
+			<key>ypos</key>
+			<integer>210</integer>
 		</dict>
 		<key>B3FB58B8-373A-4DE4-B39B-3974AE0F6F9F</key>
 		<dict>
@@ -210,6 +368,13 @@ echo $faker-&gt;$query;</string>
 			<integer>40</integer>
 			<key>ypos</key>
 			<integer>40</integer>
+		</dict>
+		<key>F59582E0-ED79-4123-941D-DD9787053B75</key>
+		<dict>
+			<key>xpos</key>
+			<integer>40</integer>
+			<key>ypos</key>
+			<integer>190</integer>
 		</dict>
 	</dict>
 	<key>webaddress</key>

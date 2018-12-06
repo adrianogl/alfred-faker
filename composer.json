@@ -1,6 +1,8 @@
 {
   "require": {
     "fzaninotto/faker": "^1.8",
-    "jansenfelipe/faker-br": "^1.0"
+    "jansenfelipe/faker-br": "^1.0",
+    "sven/file-config": "^2.0",
+    "ramsey/uuid": "^3.8"
   }
 }
